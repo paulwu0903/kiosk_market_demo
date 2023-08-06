@@ -6,6 +6,7 @@ module kiosk_market_demo::market{
     use sui::transfer::{Self};
     use sui::sui::{SUI};
     use sui::coin::{Self, Coin};
+    use std::option::{Self,};
     use sui::transfer_policy::{Self, TransferPolicy};
 
     const PRICE: u64 = 10000;
@@ -28,6 +29,7 @@ module kiosk_market_demo::market{
         kiosk::place<T>(kiosk_obj, kiosk_cap, nft);
     }
 
+    // let placed/locked nft to sale
     public entry fun list_nft<T: key + store>(
         kiosk_obj: &mut Kiosk,
         kiosk_cap: &KioskOwnerCap,
@@ -37,15 +39,18 @@ module kiosk_market_demo::market{
         kiosk::list<T>(kiosk_obj, kiosk_cap, id, price, );
     }
 
-    public entry fun close_and_withdraw_kiosk(
-        kiosk_obj: Kiosk,
-        kiosk_cap: KioskOwnerCap,
+    // withdraw the balance of kiosk
+    public entry fun withdraw_rewards(
+        kiosk_obj: &mut Kiosk,
+        kiosk_cap: &KioskOwnerCap,
         ctx: &mut TxContext,
     ){
-        let rewards = kiosk::close_and_withdraw(kiosk_obj, kiosk_cap, ctx);
+        let none = option::none<u64>();
+        let rewards = kiosk::withdraw(kiosk_obj, kiosk_cap, none, ctx);
         transfer::public_transfer(rewards, tx_context::sender(ctx));
     }
 
+    // let placed/locked nft to sale with purchase_cap
     public entry fun list_nft_with_purchase_cap<T: key + store>(
         kiosk_obj: &mut Kiosk,
         kiosk_cap: &KioskOwnerCap,
@@ -63,7 +68,7 @@ module kiosk_market_demo::market{
 
         transfer::public_transfer(purchase_cap, tx_context::sender(ctx));
     }
-
+    // get back the place nft
     public entry fun take_nft<T: store + key>(
         kiosk_obj: &mut Kiosk,
         kiosk_cap: &KioskOwnerCap,
@@ -78,7 +83,7 @@ module kiosk_market_demo::market{
 
         transfer::public_transfer(nft, tx_context::sender(ctx));
     }
-
+    // delist the nft, then nft can not be bought
     public entry fun delist_nft<T: store + key>(
         kiosk_obj: &mut Kiosk,
         kiosk_cap: &KioskOwnerCap,
@@ -91,6 +96,7 @@ module kiosk_market_demo::market{
         );
     }
 
+    // 
     public entry fun purchase_nft<T: store + key>(
         kiosk_obj: &mut Kiosk,
         policy: &mut TransferPolicy<T>,

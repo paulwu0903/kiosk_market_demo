@@ -83,7 +83,7 @@ module kiosk_market_demo::nft{
             id: object::new(ctx),
             counter: 0
         };
-        
+        // the collector of mint tokens
         let nft_fund = Nft_fund{
             id: object::new(ctx),
             balance: balance::zero<SUI>(),
@@ -94,6 +94,7 @@ module kiosk_market_demo::nft{
         transfer::public_share_object(counter);
     }
 
+    // transfer nft
     public entry fun transfer_nft(
         nft: StudentNFT,
         to: address,
@@ -101,6 +102,7 @@ module kiosk_market_demo::nft{
         transfer::public_transfer(nft, to);
     }
 
+    // mint nft
     public entry fun mint_nft(
         nft_fund: &mut Nft_fund, 
         counter: &mut Counter, 
